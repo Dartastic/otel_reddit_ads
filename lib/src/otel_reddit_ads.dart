@@ -1,15 +1,16 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_reddit_ads_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_reddit_ads';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class RedditAdsResult {
+  /// Creates a result.
   const RedditAdsResult({
     this.businessId,
     this.adAccountId,
@@ -66,8 +67,13 @@ class RedditAdsResult {
   final int? statusCode;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class RedditAdsCallResult<T> {
+  /// Creates a call result.
   const RedditAdsCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final RedditAdsResult? result;
 }
@@ -92,110 +98,110 @@ Future<T> tracedRedditAds<T>({
   final span = _tracer().startSpan(
     'reddit_ads $operation',
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final r = await invoke();
     if (r.result != null) {
       final extras = <Attribute<Object>>[];
       if (r.result!.businessId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.business.id',
           r.result!.businessId!,
         ));
       }
       if (r.result!.adAccountId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.ad_account.id',
           r.result!.adAccountId!,
         ));
       }
       if (r.result!.campaignId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.campaign.id',
           r.result!.campaignId!,
         ));
       }
       if (r.result!.adGroupId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.ad_group.id',
           r.result!.adGroupId!,
         ));
       }
       if (r.result!.adId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.ad.id',
           r.result!.adId!,
         ));
       }
       if (r.result!.objective != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.objective',
           r.result!.objective!,
         ));
       }
       if (r.result!.bidStrategy != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.bid.strategy',
           r.result!.bidStrategy!,
         ));
       }
       if (r.result!.fundingType != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.funding.type',
           r.result!.fundingType!,
         ));
       }
       if (r.result!.communitiesTargeted != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.communities.targeted',
           r.result!.communitiesTargeted!,
         ));
       }
       if (r.result!.spendMinor != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'reddit_ads.spend.minor',
           r.result!.spendMinor!,
         ));
       }
       if (r.result!.currencyCode != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'reddit_ads.currency.code',
           r.result!.currencyCode!,
         ));
       }
       if (r.result!.impressions != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'reddit_ads.impressions',
           r.result!.impressions!,
         ));
       }
       if (r.result!.clicks != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'reddit_ads.clicks',
           r.result!.clicks!,
         ));
       }
       if (r.result!.upvotes != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'reddit_ads.upvotes',
           r.result!.upvotes!,
         ));
       }
       if (r.result!.comments != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'reddit_ads.comments',
           r.result!.comments!,
         ));
       }
       if (r.result!.conversions != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'reddit_ads.conversions',
           r.result!.conversions!,
         ));
       }
       if (r.result!.statusCode != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'http.response.status_code',
           r.result!.statusCode!,
         ));
@@ -206,13 +212,13 @@ Future<T> tracedRedditAds<T>({
           );
         }
       }
-      if (extras.isNotEmpty) span.addAttributes(OTel.attributes(extras));
+      if (extras.isNotEmpty) span.addAttributes(OTelAPI.attributes(extras));
     }
     return r.value;
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
-        ErrorResource.errorType.key,
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
+        ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
     ]));
